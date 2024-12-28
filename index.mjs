@@ -1,9 +1,9 @@
 import fs from "fs";
 import path from "path";
 import { execSync } from "child_process";
+import { confirm } from "@inquirer/prompts";
 
-const eslintConfig = `// eslint.config.mjs
-import pluginJs from '@eslint/js';
+const eslintConfig = `import pluginJs from '@eslint/js';
 import importPlugin from 'eslint-plugin-import';
 import pluginReact from 'eslint-plugin-react';
 import hooksPlugin from 'eslint-plugin-react-hooks';
@@ -115,32 +115,51 @@ export default [
 ];
 `;
 
-const filePath = path.join(process.cwd(), "eslint.config.mjs");
-
-function getCommand(packageManager) {
-  switch (packageManager) {
-    case "yarn":
-      return "npm add";
-    case "pnpm":
-      return "pnpm add";
-    default:
-      return "npm add";
-  }
-}
-
-function installDependencies() {
+async function installDependencies() {
   const dependencies = [
     "@eslint/js",
     "eslint",
     "globals",
     "eslint-plugin-react",
     "eslint-plugin-react-hooks",
-    'eslint-plugin-import',
+    "eslint-plugin-import",
     "typescript-eslint",
   ];
 
+  function detectPackageManager() {
+    console.log("Detecting package manager...");
+    if (fs.existsSync(path.join(process.cwd(), "yarn.lock"))) {
+      return "yarn";
+    } else if (fs.existsSync(path.join(process.cwd(), "pnpm-lock.yaml"))) {
+      return "pnpm";
+    } else {
+      return "npm";
+    }
+  }
+
+  function getCommand(packageManager) {
+    switch (packageManager) {
+      case "yarn":
+        return "npm add";
+      case "pnpm":
+        return "pnpm add";
+      default:
+        return "npm add";
+    }
+  }
+
+  const isInstallingDependencies = await confirm({
+    message: "Do you want to install dependencies?",
+    default: true,
+  });
+
+  if (!isInstallingDependencies) {
+    return;
+  }
+
   const packageManager = detectPackageManager();
-  console.log(`Package manager: ${packageManager}`)
+  console.log(`Package manager: ${packageManager}`);
+
   const command = getCommand(packageManager);
 
   try {
@@ -155,23 +174,59 @@ function installDependencies() {
   }
 }
 
-function detectPackageManager() {
-  console.log("Detecting package manager...");
-  if (fs.existsSync(path.join(process.cwd(), "yarn.lock"))) {
-    return "yarn";
-  } else if (fs.existsSync(path.join(process.cwd(), "pnpm-lock.yaml"))) {
-    return "pnpm";
-  } else {
-    return "npm";
+async function addScriptsToPackageJson() {
+  const packageJsonPath = path.join(process.cwd(), "package.json");
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
+
+  const isAddingScripts = await confirm({
+    message: "Do you want to add ESLint scripts to package.json?",
+    default: true,
+  });
+
+  if (!isAddingScripts) {
+    return;
   }
+
+  console.log('Adding scripts do package.json...')
+
+  packageJson.scripts = {
+    ...packageJson.scripts,
+    lint: "eslint . --cache --cache-location=.cache/.eslintcache --cache-strategy metadata",
+    "lint:fix":
+      "eslint --fix . --cache --cache-location=.cache/.eslintcache --cache-strategy metadata",
+  };
+
+  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+  console.log("ESLint scripts have been added to package.json.");
 }
 
-installDependencies();
+async function createConfig() {
+  const isCreatingConfig = await confirm({
+    message: "Do you want to create eslint.config.mjs?",
+    default: true,
+  });
 
-fs.writeFile(filePath, eslintConfig, (err) => {
-  if (err) {
-    console.error("Error creating file:", err);
-    process.exit(1);
+  if (!isCreatingConfig) {
+    return;
   }
-  console.log("eslint.config.mjs created!");
-});
+
+  console.log("Creating eslint.config.mjs...");
+
+  const filePath = path.join(process.cwd(), "eslint.config.mjs");
+
+  fs.writeFile(filePath, eslintConfig, (err) => {
+    if (err) {
+      console.error("Error creating file:", err);
+      process.exit(1);
+    }
+    console.log("eslint.config.mjs created!");
+  });
+
+  console.log("eslint.config.mjs has been created");
+}
+
+// CLI
+
+installDependencies();
+addScriptsToPackageJson();
+createConfig();

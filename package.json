@@ -3,6 +3,7 @@
   "version": "1.4.0",
   "description": "woodemai eslint config",
   "main": "eslint.config.mjs",
+  "homepage": "https://github.com/woodemai/eslint-config-woodemai",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

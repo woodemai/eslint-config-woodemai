@@ -187,7 +187,7 @@ async function addScriptsToPackageJson() {
     return;
   }
 
-  console.log('Adding scripts do package.json...')
+  console.log('Adding scripts to package.json...');
 
   packageJson.scripts = {
     ...packageJson.scripts,
@@ -227,6 +227,10 @@ async function createConfig() {
 
 // CLI
 
-installDependencies();
-addScriptsToPackageJson();
-createConfig();
+async function main() {
+  await installDependencies();
+  await addScriptsToPackageJson();
+  await createConfig();
+}
+
+main();

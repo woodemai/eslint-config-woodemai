@@ -115,7 +115,7 @@ export default [
 ];
 `;
 
-async function installDependencies() {
+function installDependencies() {
   const dependencies = [
     "@eslint/js",
     "eslint",
@@ -148,15 +148,6 @@ async function installDependencies() {
     }
   }
 
-  const isInstallingDependencies = await confirm({
-    message: "Do you want to install dependencies?",
-    default: true,
-  });
-
-  if (!isInstallingDependencies) {
-    return;
-  }
-
   const packageManager = detectPackageManager();
   console.log(`Package manager: ${packageManager}`);
 
@@ -174,18 +165,9 @@ async function installDependencies() {
   }
 }
 
-async function addScriptsToPackageJson() {
+function addScriptsToPackageJson() {
   const packageJsonPath = path.join(process.cwd(), "package.json");
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
-
-  const isAddingScripts = await confirm({
-    message: "Do you want to add ESLint scripts to package.json?",
-    default: true,
-  });
-
-  if (!isAddingScripts) {
-    return;
-  }
 
   console.log("Adding scripts to package.json...");
 
@@ -200,16 +182,7 @@ async function addScriptsToPackageJson() {
   console.log("ESLint scripts have been added to package.json.");
 }
 
-async function createConfig() {
-  const isCreatingConfig = await confirm({
-    message: "Do you want to create eslint.config.mjs?",
-    default: true,
-  });
-
-  if (!isCreatingConfig) {
-    return;
-  }
-
+function createConfig() {
   console.log("Creating eslint.config.mjs...");
 
   const filePath = path.join(process.cwd(), "eslint.config.mjs");
@@ -225,11 +198,31 @@ async function createConfig() {
 }
 
 // CLI
+async function main() {
+  const isInstallingDependencies = await confirm({
+    message: "Do you want to install dependencies?",
+    default: true,
+  });
+  const isAddingScripts = await confirm({
+    message: "Do you want to add ESLint scripts to package.json?",
+    default: true,
+  });
+  const isCreatingConfig = await confirm({
+    message: "Do you want to create eslint.config.mjs?",
+    default: true,
+  });
 
-function main() {
-  installDependencies();
-  addScriptsToPackageJson();
-  createConfig();
+  if (isInstallingDependencies) {
+    installDependencies();
+  }
+
+  if (isAddingScripts) {
+    addScriptsToPackageJson();
+  }
+
+  if (isCreatingConfig) {
+    createConfig();
+  }
 }
 
 main();

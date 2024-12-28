@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-woodemai",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "woodemai eslint config",
   "main": "eslint.config.mjs",
   "homepage": "https://github.com/woodemai/eslint-config-woodemai",

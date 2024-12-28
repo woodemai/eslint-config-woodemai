@@ -21,6 +21,8 @@
     "commander": "^12.1.0"
   },
   "peerDependencies": {
+    "commander": "^12.1.0",
+    "@inquirer/prompts": "^7.2.1",
     "@eslint/js": "^9.0.0",
     "eslint": "^9.0.0",
     "eslint-plugin-react": "^7.37.3",

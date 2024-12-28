@@ -1,0 +1,28 @@
+{
+  "name": "eslint-config-woodemai",
+  "version": "1.4.0",
+  "description": "woodemai eslint config",
+  "main": "eslint.config.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "eslint-config-woodemai-cli": "cli.mjs"
+  },
+  "keywords": [
+    "eslint",
+    "eslintconfig"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "commander": "^12.1.0"
+  },
+  "peerDependencies": {
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "globals": "^15.14.0",
+    "eslint-plugin-react": "^7.37.3",
+    "typescript-eslint": "^8.18.2"
+  }
+}

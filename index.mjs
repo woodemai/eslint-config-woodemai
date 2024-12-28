@@ -187,7 +187,7 @@ async function addScriptsToPackageJson() {
     return;
   }
 
-  console.log('Adding scripts to package.json...');
+  console.log("Adding scripts to package.json...");
 
   packageJson.scripts = {
     ...packageJson.scripts,
@@ -218,19 +218,18 @@ async function createConfig() {
     if (err) {
       console.error("Error creating file:", err);
       process.exit(1);
+    } else {
+      console.log("eslint.config.mjs created!");
     }
-    console.log("eslint.config.mjs created!");
   });
-
-  console.log("eslint.config.mjs has been created");
 }
 
 // CLI
 
-async function main() {
-  await installDependencies();
-  await addScriptsToPackageJson();
-  await createConfig();
+function main() {
+  installDependencies();
+  addScriptsToPackageJson();
+  createConfig();
 }
 
 main();

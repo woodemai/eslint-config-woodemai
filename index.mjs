@@ -2,6 +2,33 @@ import fs from "fs";
 import path from "path";
 import { execSync } from "child_process";
 import { confirm } from "@inquirer/prompts";
+import chalk from "chalk";
+
+const REDCOLLAR_LOGO = `    *****                                                                                  *****    
+  ***********                                                                          ***********  
+*****************                                                                  *****************
+*********************                                                          *********************
+  ***********************                                                  ***********************  
+   ***************************                                         **************************   
+     *****************************                                 ****************************     
+       *******************************                        *******************************       
+        **********************************                **********************************        
+          ************************************        ************************************          
+            ****************************************************************************            
+             **************************************************************************             
+               **********************************************************************               
+                 ******************************************************************                 
+                  ****************************************************************                  
+                    *****************************  *****************************                    
+                      *************************      *************************                      
+                       **********************          **********************                       
+                         ******************             *******************                         
+                           ***************                ***************                           
+                            ************                    ************                            
+                              ********                        ********                              
+                               *****                            ****                                
+                                 *                                *                                 
+                                                                                                    `;
 
 const eslintConfig = `import pluginJs from '@eslint/js';
 import importPlugin from 'eslint-plugin-import';
@@ -199,18 +226,32 @@ function createConfig() {
 
 // CLI
 async function main() {
-  const isInstallingDependencies = await confirm({
-    message: "Do you want to install dependencies?",
-    default: true,
-  });
-  const isAddingScripts = await confirm({
-    message: "Do you want to add ESLint scripts to package.json?",
-    default: true,
-  });
-  const isCreatingConfig = await confirm({
-    message: "Do you want to create eslint.config.mjs?",
-    default: true,
-  });
+  console.log(chalk.red(REDCOLLAR_LOGO));
+
+  const args = process.argv.slice(2);
+  const installDependenciesFlag =
+    args.includes("--dependencies") || args.includes("-D");
+  const addScriptsFlag = args.includes("--scripts") || args.includes("-S");
+  const createConfigFlag = args.includes("--config") || args.includes("-C");
+
+  const isInstallingDependencies =
+    installDependenciesFlag ??
+    (await confirm({
+      message: "Do you want to install dependencies?",
+      default: true,
+    }));
+  const isAddingScripts =
+    addScriptsFlag ??
+    (await confirm({
+      message: "Do you want to add ESLint scripts to package.json?",
+      default: true,
+    }));
+  const isCreatingConfig =
+    createConfigFlag ??
+    (await confirm({
+      message: "Do you want to create eslint.config.mjs?",
+      default: true,
+    }));
 
   if (isInstallingDependencies) {
     installDependencies();
